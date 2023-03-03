@@ -25,6 +25,10 @@ class ChatGptMagic(Magics):
     @line_magic
     def aiusage(self, line):
         return self.last_usage
+    
+    @line_magic
+    def aihistory(self, line):
+        return self.history
 
     @line_cell_magic
     def ai(self, line, cell=None):
