@@ -13,19 +13,27 @@ class ChatGptMagic(Magics):
     def __init__(self, shell):
         # You must call the parent constructor
         super(ChatGptMagic, self).__init__(shell)
+        self.system_message = "You are a helpful assistant. Do not provide an explanation. Unless specified otherwise, assume the user is talking about the python programming language."
         self.aireset()
         self.last_usage = None
 
     @line_magic
     def aireset(self, line=None):
         self.history = [
-            {"role": "system", "content": "You are a helpful assistant. Do not provide an explanation. Unless specified otherwise, assume the user is talking about the python programming language."},
+            {"role": "system", "content": self.system_message},
         ]
+
+    @line_magic
+    def aisystem(self, line=None):
+        if line:
+            self.system_message = line.strip()
+        else:
+            console.print(self.system_message)
 
     @line_magic
     def aiusage(self, line):
         return self.last_usage
-    
+
     @line_magic
     def aihistory(self, line):
         return self.history
