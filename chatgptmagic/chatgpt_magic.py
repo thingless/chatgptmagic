@@ -19,7 +19,7 @@ class ChatGptMagic(Magics):
     @line_magic
     def aireset(self, line=None):
         self.history = [
-            {"role": "system", "content": "You are a helpful assistant. Do not provide an explanation."},
+            {"role": "system", "content": "You are a helpful assistant. Do not provide an explanation. Unless specified otherwise, assume the user is talking about the python programming language."},
         ]
 
     @line_magic
