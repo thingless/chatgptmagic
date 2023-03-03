@@ -1,9 +1,9 @@
 import openai
-from IPython.core.magic import (Magics, magics_class, line_cell_magic, line_magic, cell_magic)
+import re
+from IPython.core.magic import (Magics, magics_class, line_cell_magic, line_magic, cell_magic, needs_local_scope)
 
 from rich.console import Console
 from rich.markdown import Markdown
- 
 
 console = Console()
 
@@ -37,6 +37,24 @@ class ChatGptMagic(Magics):
     @line_magic
     def aihistory(self, line):
         return self.history
+
+    def _get_last_code_block(self):
+        try:
+            txt = self.history[-1]['content']
+            blocks = list(re.finditer(r'(?mis)```(.*?)```', txt))
+            return blocks[-1].group(1).strip()
+        except Exception:
+            #raise
+            return None
+
+    @line_cell_magic
+    def aiexec(self, line=None, cell=None):
+        if line or cell:
+            self.ai(line, cell)
+        cb = self._get_last_code_block()
+        if cb:
+            #print(local_ns)
+            exec(cb, self.shell.user_ns)
 
     @line_cell_magic
     def ai(self, line, cell=None):
