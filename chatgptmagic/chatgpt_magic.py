@@ -1,5 +1,7 @@
 import openai
 import re
+import traceback
+import sys
 from IPython.core.magic import (Magics, magics_class, line_cell_magic, line_magic, cell_magic, needs_local_scope)
 
 from rich.console import Console
@@ -38,6 +40,23 @@ class ChatGptMagic(Magics):
     def aihistory(self, line):
         return self.history
 
+    @line_magic
+    def aifix(self, line=None):
+        if not getattr(sys, 'last_type', None):
+            return
+        txt = traceback.format_exception(sys.last_type, sys.last_value, sys.last_traceback)
+        self.ai("""Fix the exception:
+```
+{}
+```""".format(txt))
+
+    @line_magic
+    def aifixexec(self, line=None):
+        if not getattr(sys, 'last_type', None):
+            return
+        self.aifix()
+        self.aiexec()
+
     def _get_last_code_block(self):
         try:
             txt = self.history[-1]['content']
@@ -53,7 +72,6 @@ class ChatGptMagic(Magics):
             self.ai(line, cell)
         cb = self._get_last_code_block()
         if cb:
-            #print(local_ns)
             exec(cb, self.shell.user_ns)
 
     @line_cell_magic
